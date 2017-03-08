@@ -19,11 +19,14 @@ public class SocketHandler {
     private static OutputStream outputStream;
     private static JSONObject httpHead;
     private static BufferedReader reader;
+    private static PrintWriter writer;
 
     public static void handle(Socket socket) throws IOException {
         SocketHandler.socket = socket;
         inputStream = SocketHandler.socket.getInputStream();
         outputStream = SocketHandler.socket.getOutputStream();
+        reader = new BufferedReader(new InputStreamReader(inputStream));
+        writer = new PrintWriter(outputStream);
         parseHttpHeader();
         resolveSocket();
         close();
@@ -36,7 +39,9 @@ public class SocketHandler {
      */
     private static void parseHttpHeader() throws IOException {
 
-        reader = new BufferedReader(new InputStreamReader(inputStream));
+
+        String line = "";
+
         String httpHeadLine = reader.readLine();
         httpHead = HTTP.toJSONObject(httpHeadLine);
     }
@@ -79,13 +84,15 @@ public class SocketHandler {
     private static void responseGetRequest() throws IOException {
         System.out.println("GET Request");
 
+
         String requestURI = httpHead.optString("Request-URI", "");
         String[] split = requestURI.split("\\?");
 
         if (split.length > 1) {
             JSONArray requestKeyArray = getRequestKey(split[1]);
-            String s = RequestRoute.routeGetResponse(requestKeyArray);
-            outputStream.write(s.getBytes());
+            JSONObject json = RequestRoute.routeGetResponse(requestKeyArray);
+            String resultJson = json.toString();
+            writeDataToClient(resultJson);
 
         } else {
             responseOtherRequest();
@@ -101,33 +108,55 @@ public class SocketHandler {
     private static void responsePostRequest() throws IOException {
         System.out.println("POST Request");
         String postData = loadPostData();
-        RequestRoute.routePostResponse(postData);
+        JSONObject json = RequestRoute.routePostResponse(postData);
+        String resultJson = json.toString();
+        System.out.println(resultJson);
+        writeDataToClient(resultJson);
 
     }
 
+    private static void writeDataToClient(String result){
+        writer.println("HTTP/1.1 200 OK");                            // Return status code for OK (200)
+        writer.println();
+        writer.println("Content-Length: " + result.length() );                // WAS WRITING TO THE WRONG STREAM BEFORE!
+        writer.println("Content-Type: "+"application/text; charset=UTF-8");
+        writer.println(result);
+        writer.println();
+        writer.flush();
+    }
     /**
      * 加载post请求中的实体数据
      * @return
      * @throws IOException
      */
-    private static String loadPostData() throws IOException {
-        String line = "";
-        StringBuilder sb = new StringBuilder();
-        while ((line = reader.readLine()) != null) {
-            if (line.isEmpty()){
-                break;
+    private static String loadPostData()  {
+        try {
+            String line = "";
+            StringBuilder sb = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+                if (line.isEmpty()){
+                    break;
+                }
             }
-        }
-        String data =  "";
-        for (;;){
-            data = reader.readLine();
-            if (data.isEmpty()){
-                break;
+            String data =  "";
+            for (;;){
+                data = reader.readLine();
+                if (data.isEmpty()){
+                    break;
+                }
+                sb.append(data);
             }
-            sb.append(data);
+            String s = sb.toString();
+            System.out.println("************");
+            System.out.println(s);
+            return s;
+        }catch (IOException e) {
+            System.out.println("***" + e.toString());
         }
 
-       return sb.toString();
+        return "";
+
     }
     /**
      * 默认处理请求,除了GET和POST请求之外的所有请求一律用该方法返回

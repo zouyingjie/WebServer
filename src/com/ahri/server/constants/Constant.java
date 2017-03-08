@@ -13,4 +13,6 @@ public class Constant {
     public static final String HTTP_REQUEST_POST = "POST";
     public static final String REUQEST_NOT_FOUND_PAGE_PATH = "./web/404.html";
 
+    public static final String SERVICE_SERACH_PHP = "SERACH_PHP";
+
 }

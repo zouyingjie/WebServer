@@ -1,13 +1,13 @@
 package com.ahri.server;
 
 import com.ahri.server.bean.Person;
+import com.ahri.server.constants.Constant;
 import com.ahri.server.data.DataContanier;
-import com.google.gson.Gson;
+import com.ahri.server.util.DBUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Created by zouyingjie on 2017/2/15.
@@ -15,7 +15,7 @@ import java.util.Set;
 public class RequestRoute {
 
 
-    public static String routeGetResponse(JSONArray requestKeys) {
+    public static JSONObject routeGetResponse(JSONArray requestKeys) {
 
         JSONObject result = new JSONObject();
         Iterator<Object> keys = requestKeys.iterator();
@@ -27,20 +27,22 @@ public class RequestRoute {
                 result.put(person.getName(), new JSONObject(person));
             }
         }
-        return result.toString();
+        return result;
     }
 
-    public static String routePostResponse(String s){
-        System.out.println("size" + DataContanier.size());
-        Gson gson = new Gson();
-        JSONObject jsonObject = new JSONObject(s);
-        Set<String> keySet = jsonObject.keySet();
-        for (String key: keySet) {
-            JSONObject json = jsonObject.getJSONObject(key);
-            Person person = gson.fromJson(json.toString(), Person.class);
-            DataContanier.put(person.getName(), person);
+    public static JSONObject routePostResponse(String postInfo) {
+
+        if (postInfo != null && postInfo.length() > 0) {
+            JSONObject jsonObject = new JSONObject(postInfo);
+            String serviceName = jsonObject.optString("SERVICE_NAME");
+
+            if (serviceName.equals(Constant.SERVICE_SERACH_PHP)) {
+                String info = jsonObject.optString("SEARCH_KEY");
+                return DBUtils.queryPHPUrlByTitle(info);
+            }
         }
-        return "";
+        return new JSONObject("{result:no response}");
+
     }
 
 }

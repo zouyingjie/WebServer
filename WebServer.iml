@@ -18,6 +18,22 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="library" name="gson-2.8.0 (2)" level="project" />
+    <orderEntry type="library" exported="" name="gson-2.8.0 (2)" level="project" />
+    <orderEntry type="library" exported="" name="mongodb-driver-3.4.2" level="project" />
+    <orderEntry type="library" exported="" name="mongodb-driver-3.4.2-sources" level="project" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/mongodb-driver-3.4.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/mongodb-driver-3.4.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="mongodb-driver-3.4.2-javadoc" level="project" />
+    <orderEntry type="library" name="mongo-java-driver-3.4.2" level="project" />
+    <orderEntry type="library" name="mongo-java-driver-3.4.2-sources" level="project" />
   </component>
 </module>
