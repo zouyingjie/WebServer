@@ -39,11 +39,10 @@ public class SocketHandler {
      */
     private static void parseHttpHeader() throws IOException {
 
-
         String line = "";
-
         String httpHeadLine = reader.readLine();
         httpHead = HTTP.toJSONObject(httpHeadLine);
+
     }
 
     /**
@@ -52,7 +51,7 @@ public class SocketHandler {
      * @throws IOException
      */
     private static void resolveSocket() throws IOException {
-        System.out.println("Ready to solve");
+
         switch (getRequestMethod()) {
             case Constant.HTTP_REQUEST_GET:
                 responseGetRequest();
@@ -64,6 +63,7 @@ public class SocketHandler {
                 responseOtherRequest();
                 break;
         }
+
     }
 
     /**
@@ -82,8 +82,6 @@ public class SocketHandler {
      * @throws IOException
      */
     private static void responseGetRequest() throws IOException {
-        System.out.println("GET Request");
-
 
         String requestURI = httpHead.optString("Request-URI", "");
         String[] split = requestURI.split("\\?");
@@ -92,7 +90,7 @@ public class SocketHandler {
             JSONArray requestKeyArray = getRequestKey(split[1]);
             JSONObject json = RequestRoute.routeGetResponse(requestKeyArray);
             String resultJson = json.toString();
-            writeDataToClient(resultJson);
+            responseDataToClient(resultJson);
 
         } else {
             responseOtherRequest();
@@ -106,16 +104,16 @@ public class SocketHandler {
      * TODO:解析POST中的实体数据,将其转换为Person类进行存储
      */
     private static void responsePostRequest() throws IOException {
-        System.out.println("POST Request");
+
         String postData = loadPostData();
         JSONObject json = RequestRoute.routePostResponse(postData);
         String resultJson = json.toString();
         System.out.println(resultJson);
-        writeDataToClient(resultJson);
+        responseDataToClient(resultJson);
 
     }
 
-    private static void writeDataToClient(String result){
+    private static void responseDataToClient(String result){
         writer.println("HTTP/1.1 200 OK");                            // Return status code for OK (200)
         writer.println();
         writer.println("Content-Length: " + result.length() );                // WAS WRITING TO THE WRONG STREAM BEFORE!
@@ -148,11 +146,10 @@ public class SocketHandler {
                 sb.append(data);
             }
             String s = sb.toString();
-            System.out.println("************");
             System.out.println(s);
             return s;
         }catch (IOException e) {
-            System.out.println("***" + e.toString());
+            e.printStackTrace();
         }
 
         return "";
@@ -183,7 +180,7 @@ public class SocketHandler {
     private static void close() throws IOException {
         inputStream.close();
         outputStream.close();
-        System.out.println("Request Finished***************");
+        System.out.println("Request Finished");
     }
 
     private static JSONArray getRequestKey(String requestParams) {

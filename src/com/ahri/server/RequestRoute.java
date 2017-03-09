@@ -14,7 +14,6 @@ import java.util.Iterator;
  */
 public class RequestRoute {
 
-
     public static JSONObject routeGetResponse(JSONArray requestKeys) {
 
         JSONObject result = new JSONObject();

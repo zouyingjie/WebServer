@@ -9,7 +9,6 @@ import java.net.Socket;
  */
 public class HttpServer {
 
-
     public static void main(String[] args) {
         try {
             waitRequest();
