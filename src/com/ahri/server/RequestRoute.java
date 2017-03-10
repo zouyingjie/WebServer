@@ -35,9 +35,9 @@ public class RequestRoute {
             JSONObject jsonObject = new JSONObject(postInfo);
             String serviceName = jsonObject.optString("SERVICE_NAME");
 
-            if (serviceName.equals(Constant.SERVICE_SERACH_PHP)) {
+            if (serviceName.equals(Constant.SERVICE_SERACH_PHP) || serviceName.equals(Constant.SERVICE_STACKOVER)) {
                 String info = jsonObject.optString("SEARCH_KEY");
-                return DBUtils.queryPHPUrlByTitle(info);
+                return DBUtils.queryPHPUrlByTitle(info, serviceName);
             }
         }
         return new JSONObject("{result:no response}");

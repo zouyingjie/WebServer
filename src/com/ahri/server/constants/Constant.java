@@ -13,5 +13,6 @@ public class Constant {
     public static final String REUQEST_NOT_FOUND_PAGE_PATH = "./web/404.html";
 
     public static final String SERVICE_SERACH_PHP = "SERACH_PHP";
+    public static final String SERVICE_STACKOVER = "SERACH_STACK_OVERFLOW";
 
 }

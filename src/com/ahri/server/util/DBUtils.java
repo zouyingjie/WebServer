@@ -1,5 +1,6 @@
 package com.ahri.server.util;
 
+import com.ahri.server.constants.Constant;
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -22,14 +23,24 @@ public class DBUtils {
 
     /**
      * 全文检索 PHP 手册数据
+     *
      * @param queryInfo
      * @return
      */
-    public static JSONObject queryPHPUrlByTitle(String queryInfo) {
+    public static JSONObject queryPHPUrlByTitle(String queryInfo, String queryType) {
+        MongoCollection<Document> collection = null;
+        switch (queryType) {
+            case Constant.SERVICE_SERACH_PHP:
+                collection = mongodb_cache.getCollection("title_document");
+                break;
+            case Constant.SERVICE_STACKOVER:
+                collection = mongodb_cache.getCollection("stackover_flow");
 
-        MongoCollection<Document> title_document = mongodb_cache.getCollection("title_document");
+        }
+
+//        MongoCollection<Document> title_document = mongodb_cache.getCollection("title_document");
         //Filters.text 用于文本索引检索
-        FindIterable<Document> resultIter = title_document.find(Filters.text(queryInfo, new TextSearchOptions().language("english")));
+        FindIterable<Document> resultIter = collection.find(Filters.text(queryInfo, new TextSearchOptions().language("english")));
 
         MongoCursor<Document> iterator = resultIter.iterator();
         JSONArray jsonArray = new JSONArray();
@@ -44,6 +55,26 @@ public class DBUtils {
         return jsonObject;
 
     }
+
+//    public static JSONObject queryStackoverFlow(String queryInfo) {
+//
+//        MongoCollection<Document> title_document = mongodb_cache.getCollection("stackover_flow");
+//        //Filters.text 用于文本索引检索
+//        FindIterable<Document> resultIter = title_document.find(Filters.text(queryInfo, new TextSearchOptions().language("english")));
+//
+//        MongoCursor<Document> iterator = resultIter.iterator();
+//        JSONArray jsonArray = new JSONArray();
+//        while (iterator.hasNext()) {
+//            Document doc = iterator.next();
+//            JSONObject json = new JSONObject(doc.toJson());
+//            jsonArray.put(json);
+//        }
+//
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("serach_result", jsonArray);
+//        return jsonObject;
+//
+//    }
 
 
 }
